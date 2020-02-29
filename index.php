@@ -114,7 +114,7 @@ $result_products = mysqli_query($link, "SELECT * FROM products $query ORDER by i
                <a href="?category=<?=$category_id?>"><?=$category_name?></a>
             </td>
             <td>
-                <?=$row["name"]?>
+                <a href="Product.php?get=view&id=<?=$row["id"]?>"><?=$row["name"]?></a>
             </td>
             <td>
                 <?=$row["description"]?>
@@ -131,8 +131,8 @@ $result_products = mysqli_query($link, "SELECT * FROM products $query ORDER by i
                 ?>
                 <a href="?view=1&id=<?=$row["id"]?>&get=<?=$view_get?>"><?=$view_name?></a><br>
 
-                <a href="Product.php?get=edit&id=<?=$row["id"]?>">Редактировать</a><br>
-                <a href="?delete=1&id=<?=$row["id"]?>&get=<?=$view_get?>">Удалить</a>
+                <a href="Product.php?get=edit&id=<?=$row["id"]?>&form=1">Редактировать</a><br>
+                <a href="Product.php?get=delete&id=<?=$row["id"]?>">Удалить</a>
 
             </td>
         </tr>

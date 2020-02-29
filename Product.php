@@ -6,7 +6,6 @@ include_once 'functions/functions.php';
 include_once 'web/header.php';
 
 ?>
-
     <h4>Управление продуктами </h4>
 
 <a href="index.php">Вернуться назад</a> <br>
@@ -14,20 +13,20 @@ include_once 'web/header.php';
 <?php
 
 // Форма активна или нет
-$form = $_GET['form'];
+$form = settype($_GET['form'], 'integer' );
 
 // Добавление и изменение категории
 if($_GET['get']=='add_product'){
     $name = $_POST['name'];
     $description = $_POST['description'];
-    $full_description = $_POST['full_description'];
+    $description_full = $_POST['description_full'];
     $id_category = $_POST['id_category'];
 
     if($_GET['edit']=='1'){
-        $id_category = $_GET['id'];
+        $id_product = $_GET['id'];
 
         if($name) {
-            $sql = "UPDATE categories SET name='$name' WHERE id='$id_category'";
+            $sql = "UPDATE products SET name='$name',description='$description',description_full='$description_full',id_category='$id_category'  WHERE id='$id_product'";
 
             if (mysqli_query($link, $sql)) {
                 echo "<div class=\"alert alert-primary\" role=\"alert\">Товар успешно изменен!</div>";
@@ -46,7 +45,7 @@ if($_GET['get']=='add_product'){
         }
 
 
-        if(!isset($name, $description, $description_full, $id_category)) {
+        if(isset($name, $description, $id_category)) {
             $sql = "INSERT INTO products (name, description, description_full, id_category, image, status) VALUES ('$name','$description','$description_full','$id_category','$uploadfile', 1 )";
 
             if (mysqli_query($link, $sql)) {
@@ -65,6 +64,15 @@ if($_GET['get']=='delete') {
     $id_product = $_GET['id'];
 
     if($id_product) {
+        $query = "SELECT * FROM `products` WHERE id=$id_product ";
+        $result = mysqli_query($link, $query);
+        $row = mysqli_fetch_assoc($result);
+        $image =  $row["image"];
+        // удаляем изображение если оно есть
+        if(isset($image)) {
+            unlink($image);
+        }
+
         $sql = "DELETE FROM products WHERE id='$id_product'";
 
         if (mysqli_query($link, $sql)) {
@@ -75,11 +83,46 @@ if($_GET['get']=='delete') {
     }
 }
 
+// Вывод информации о продукте
+if($_GET['get']=='view'){
+    $id_product = $_GET['id'];
+    $edit = '&edit=1&id='.$id_category;
+    $query = "SELECT * FROM `products` WHERE id=$id_product ";
+    $result = mysqli_query($link, $query);
+    $row = mysqli_fetch_assoc($result);
+    $name =  $row["name"];
+    $description =  $row["description"];
+    $description_full =  $row["description_full"];
+    $id_category =  $row["id_category"];
+    $image =  $row["image"];
+
+    if(isset($name)) {
+        echo 'Наименование: <b>' . $name . '</b><br> ';
+    }
+    if(isset($description)) {
+
+        echo 'Описание: <b>' . $description . '</b><br> ';
+    }
+    if(isset($description_full)) {
+
+        echo 'Полное описание: <b>' . $description_full . '</b><br> ';
+    }
+    if(isset($image)) {
+
+        echo 'Изображение: <br> <img src="'.$row['image'].'"> <br> ';
+    }
+
+
+
+}
+
+
+
 
 // + Форма изменения наименования
 if($_GET['get']=='edit'){
     $id_product = $_GET['id'];
-    $edit = '&edit=1&id='.$id_category;
+    $edit = '&edit=1&id='.$id_product;
     $query = "SELECT * FROM `products` WHERE id=$id_product ";
     $result = mysqli_query($link, $query);
     $row = mysqli_fetch_assoc($result);
@@ -124,6 +167,9 @@ if($_GET['get']=='edit'){
         <?php }?>
 
         </select>
+
+
+
         <br>
         <label>Изображение:</label>
         <input type="file" name="image"><br>

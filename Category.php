@@ -14,7 +14,7 @@ include_once 'web/header.php';
 <?php
 
 // Форма активна или нет
-$form = $_GET['form'];
+$form = settype($_GET['form'], 'integer' );
 
 // Добавление и изменение категории
 if($_GET['get']=='add_category'){
